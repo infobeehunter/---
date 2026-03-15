@@ -1,158 +1,92 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { ScrollView, Text, View, Pressable } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { useLanguage } from "@/lib/i18n/language-context";
-const PROFILE = {
- name: "Marco Rossi",
- level: "expertHunter",
- points: 1850,
- nextLevelPoints: 2500,
- completedExperiences: 12,
- exploredDistricts: 5,
- redeemedDiscounts: 8,
- unlockedBadges: 7,
-};
-const STAT_ITEMS = [
- {
- key: "completedExperiences",
- icon: "✓",
- label: "Esperienze Completate",
- },
- { key: "exploredDistricts", icon: "🗺️", label: "Quartieri Esplorati" },
- { key: "redeemedDiscounts", icon: "🎟️", label: "Sconti Riscattati" },
- { key: "unlockedBadges", icon: "🏆", label: "Badge Sbloccati" },
-];
+import { useColors } from "@/hooks/use-colors";
 export default function ProfileScreen() {
  const { t, language, setLanguage } = useLanguage();
- const progressPercentage =
- (PROFILE.points / PROFILE.nextLevelPoints) * 100;
+ const colors = useColors();
+ const [showLanguageMenu, setShowLanguageMenu] = useState(false);
  return (
- <ScreenContainer className="bg-background">
- <ScrollView
- contentContainerStyle={{ flexGrow: 1 }}
- showsVerticalScrollIndicator={false}
- >
- <View className="gap-4 p-4">
- <Card className="bg-secondary">
- <CardContent>
+ <ScreenContainer className="p-4">
+ <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+ <View className="gap-6">
+ {/* Profile Header */}
  <View className="items-center gap-3">
- <View className="w-16 h-16 rounded-full bg-white items-center j
- <Text className="text-3xl">👤</Text>
+ <View className="w-20 h-20 rounded-full bg-primary items-center jus
+ <Text className="text-4xl">👤</Text>
  </View>
  <View className="items-center">
- <Text className="text-xl font-bold text-white">
- {PROFILE.name}
- </Text>
- <Badge variant="success" size="md" className="mt-2">
- {t(`profile.${PROFILE.level}`)}
- </Badge>
+ <Text className="text-2xl font-bold text-foreground">John Doe</Tex
+ <Text className="text-sm text-muted">Level 12 • 1,850 pts</Text>
  </View>
  </View>
- </CardContent>
+ {/* Stats */}
+ <View className="flex-row gap-3">
+ <Card className="flex-1">
+ <View className="items-center gap-1">
+ <Text className="text-2xl font-bold text-primary">12</Text>
+ <Text className="text-xs text-muted text-center">{t("badges")}</
+ </View>
  </Card>
+ <Card className="flex-1">
+ <View className="items-center gap-1">
+ <Text className="text-2xl font-bold text-primary">24</Text>
+ <Text className="text-xs text-muted text-center">{t("experiences
+ </View>
+ </Card>
+ <Card className="flex-1">
+ <View className="items-center gap-1">
+ <Text className="text-2xl font-bold text-primary">8</Text>
+ <Text className="text-xs text-muted text-center">{t("partners")}
+ </View>
+ </Card>
+ </View>
+ {/* Language Settings */}
  <Card>
- <CardHeader>
- <CardTitle>{t("profile.totalPoints")}</CardTitle>
- </CardHeader>
- <CardContent>
  <View className="gap-3">
- <View className="flex-row justify-between items-center">
- <Text className="text-lg font-bold text-primary">
- {PROFILE.points}
+ <Text className="font-semibold text-foreground">{t("language")}</T
+ <View className="flex-row gap-2">
+ {["it", "en"].map((lang) => (
+ <Pressable
+ key={lang}
+ onPress={() => setLanguage(lang as "it" | "en")}
+ style={({ pressed }) => [
+ {
+ opacity: pressed ? 0.7 : 1,
+ flex: 1,
+ backgroundColor: language === lang ? colors.primary : co
+ },
+ ]}
+ className="py-2 rounded-lg items-center border border-borde
+ >
+ <Text
+ className={`font-semibold ${
+ language === lang ? "text-background" : "text-foreground
+ }`}
+ >
+ {lang.toUpperCase()}
  </Text>
- <Text className="text-sm text-muted">
- / {PROFILE.nextLevelPoints}
- </Text>
- </View>
- <View className="h-3 bg-surface rounded-full overflow-hidden">
- <View
- className="h-full bg-success"
- style={{
- width: `${progressPercentage}%`,
- }}
- />
- </View>
- <Text className="text-xs text-muted text-center">
- {Math.round(progressPercentage)}% completato
- </Text>
- </View>
- </CardContent>
- </Card>
- <View>
- <Text className="text-lg font-semibold text-foreground mb-3">
- Statistiche
- </Text>
- <View className="gap-2">
- {STAT_ITEMS.map((stat) => (
- <Card key={stat.key}>
- <CardContent>
- <View className="flex-row items-center justify-between">
- <View className="flex-row items-center gap-3">
- <Text className="text-2xl">{stat.icon}</Text>
- <Text className="text-sm font-semibold text-foreground">
- {stat.label}
- </Text>
- </View>
-<Text className="text-lg font-bold text-primary">
- {PROFILE[stat.key as keyof typeof PROFILE]}
- </Text>
- </View>
- </CardContent>
- </Card>
+ </Pressable>
  ))}
  </View>
  </View>
- <View>
- <Text className="text-lg font-semibold text-foreground mb-3">
- Impostazioni
- </Text>
- <Card>
- <CardContent>
- <View className="gap-3">
- <View className="flex-row items-center justify-between">
- <Text className="text-sm font-semibold text-foreground">
- Lingua
- </Text>
- <Text className="text-sm text-primary font-semibold">
- {language === "it" ? "Italiano" : "English"}
- </Text>
- </View>
- <View className="flex-row gap-2">
- <Button
- variant={language === "it" ? "primary" : "outline"}
- size="sm"
-onPress={() => setLanguage("it")}
- className="flex-1"
- >
- Italiano
- </Button>
- <Button
- variant={language === "en" ? "primary" : "outline"}
- size="sm"
-onPress={() => setLanguage("en")}
- className="flex-1"
- >
- English
- </Button>
- </View>
- </View>
- </CardContent>
  </Card>
+ {/* Settings */}
+ <Card>
+ <View className="gap-3">
+ <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }
+ <Text className="text-foreground font-semibold">{t("settings")}<
+ </Pressable>
+ <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }
+ <Text className="text-foreground font-semibold">{t("about")}</Te
+ </Pressable>
+ <Pressable style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }
+ <Text className="text-error font-semibold">{t("logout")}</Text>
+ </Pressable>
  </View>
- <View className="gap-2">
- <Button variant="outline" size="lg">
- Condividi
- </Button>
- <Button variant="outline" size="lg">
- Feedback
- </Button>
- <Button variant="ghost" size="lg">
- Esci
- </Button>
- </View>
+ </Card>
  </View>
  </ScrollView>
  </ScreenContainer>
