@@ -1,149 +1,81 @@
-import * as React from "react";
-import { ScrollView, Text, View, FlatList, Pressable } from "react-native";
+import React, { useState } from "react";
+import { ScrollView, Text, View, Pressable, TextInput } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge";
-import { useColors } from "@/hooks/use-colors";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { useColors } from "@/hooks/use-colors";
 const EXPERIENCES = [
- {
- id: "1",
- name: "Tour in Barca",
- category: "sea",
- points: 50,
- badge: "Capitano del Levante",
- color: "#1A4B8C",
- },
- {
- id: "2",
- name: "Tour in Bici",
- category: "bike",
- points: 40,
- badge: "Pedalatore Seriale",
- color: "#2ECC71",
- },
- {
- id: "3",
- name: "Corso Orecchiette",
- category: "food",
- points: 60,
- badge: "Orecchietta Master",
- color: "#F5C518",
- },
- {
- id: "4",
- name: "Basilica di San Nicola",
- category: "culture",
- points: 30,
- badge: "Storico Barese",
- color: "#FF6B6B",
- },
-];
-const CATEGORIES = [
- { id: "all", name: "Tutti", icon: "🎯" },
- { id: "sea", name: "Mare", icon: "🌊" },
- { id: "bike", name: "Bici", icon: "🚴" },
- { id: "food", name: "Cibo", icon: "🍽️" },
- { id: "culture", name: "Cultura", icon: "🏛️" },
+ { id: 1, name: "Basilica di San Nicola", category: "history", rating: 4.8 },
+ { id: 2, name: "Cattedrale di Bari", category: "history", rating: 4.7 },
+ { id: 3, name: "Lungomare Nazario Sauro", category: "nature", rating: 4.6 },
+ { id: 4, name: "Orecchiette Baresi", category: "food", rating: 4.9 },
 ];
 export default function HomeScreen() {
- const colors = useColors();
  const { t } = useLanguage();
- const [selectedCategory, setSelectedCategory] = React.useState("all");
- const [userPoints, setUserPoints] = React.useState(150);
+ const colors = useColors();
+ const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+ const [searchText, setSearchText] = useState("");
+ const filteredExperiences = EXPERIENCES.filter((exp) => {
+ const matchesCategory = !selectedCategory || exp.category === selectedCatego
+ const matchesSearch = exp.name.toLowerCase().includes(searchText.toLowerCase
+ return matchesCategory && matchesSearch;
+ });
  return (
- <ScreenContainer className="bg-background">
- <View className="flex-row justify-between items-center px-4 py-3 bg-surfac
- <View>
- <Text className="text-sm text-muted">{t("home.totalPoints")}</Text>
- <Text className="text-2xl font-bold text-primary">{userPoints}</Text>
+ <ScreenContainer className="p-4">
+ <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+ <View className="gap-6">
+ {/* Header */}
+ <View className="gap-2">
+ <Text className="text-4xl font-bold text-foreground">🐝 BeeHunter</T
+ <Text className="text-base text-muted">{t("discover_bari")}</Text>
  </View>
- <View className="items-center">
- <Text className="text-lg font-bold text-foreground">BeeHunter</Text>
- <Badge variant="success" size="sm">
- {t("profile.noviceHunter")}
- </Badge>
- </View>
- </View>
- <ScrollView
- contentContainerStyle={{ flexGrow: 1 }}
- showsVerticalScrollIndicator={false}
- >
- <View className="gap-4 p-4">
- <View>
- <Text className="text-xl font-bold text-foreground">
- {t("home.discoverBari")}
- </Text>
- <Text className="text-sm text-muted mt-1">
- {t("home.completeChallenge")}
- </Text>
- </View>
- <FlatList
- data={CATEGORIES}
- horizontal
- showsHorizontalScrollIndicator={false}
- scrollEnabled={false}
- keyExtractor={(item) => item.id}
- renderItem={({ item }) => (
+ {/* Search */}
+ <TextInput
+ placeholder={t("search")}
+ value={searchText}
+ onChangeText={setSearchText}
+ className="bg-surface border border-border rounded-lg px-4 py-3 tex
+ placeholderTextColor={colors.muted}
+ />
+ {/* Categories */}
+ <View className="gap-2">
+ <Text className="text-sm font-semibold text-muted">{t("categories")}
+ <View className="flex-row gap-2 flex-wrap">
+ {["history", "nature", "food"].map((cat) => (
  <Pressable
- onPress={() => setSelectedCategory(item.id)}
+ key={cat}
+ onPress={() => setSelectedCategory(selectedCategory === cat ?
  style={({ pressed }) => [
  {
  opacity: pressed ? 0.7 : 1,
+ backgroundColor: selectedCategory === cat ? colors.primary
  },
  ]}
- >
- <View
- className={`mr-3 px-4 py-2 rounded-full border-2 ${
- selectedCategory === item.id
- ? "bg-primary border-primary"
-: "bg-surface border-border"
- }`}
+ className="px-4 py-2 rounded-full border border-border"
  >
  <Text
- className={`text-sm font-semibold ${
- selectedCategory === item.id
- ? "text-white"
-: "text-foreground"
+ className={`text-sm font-medium ${
+ selectedCategory === cat ? "text-background" : "text-foreg
  }`}
  >
- {item.icon} {item.name}
+ {t(cat)}
  </Text>
- </View>
  </Pressable>
- )}
- contentContainerStyle={{ gap: 8 }}
- />
+ ))}
+ </View>
+ </View>
+ {/* Experiences List */}
  <View className="gap-3">
- <Text className="text-lg font-semibold text-foreground">
- {t("home.availableExperiences")}
- </Text>
- {EXPERIENCES.map((exp) => (
- <Card key={exp.id} onPress={() => {}}>
- <CardHeader>
- <View className="flex-row justify-between items-start">
- <View className="flex-1">
- <CardTitle>{exp.name}</CardTitle>
-<Text className="text-xs text-muted mt-1">
- {exp.category}
- </Text>
+ {filteredExperiences.map((exp) => (
+ <Card key={exp.id}>
+ <View className="gap-2">
+ <Text className="text-lg font-semibold text-foreground">{exp.n
+ <View className="flex-row justify-between items-center">
+ <Text className="text-sm text-muted capitalize">{t(exp.categ
+ <Text className="text-sm font-semibold text-primary">⭐ {ex
  </View>
- <Badge variant="success" size="sm">
- +{exp.points}
- </Badge>
  </View>
- </CardHeader>
- <CardContent>
- <View className="flex-row items-center gap-2">
- <View
- className="w-8 h-8 rounded-full"
-style={{ backgroundColor: exp.color }}
- />
- <Text className="text-sm text-foreground flex-1">
- {exp.badge}
- </Text>
- </View>
- </CardContent>
  </Card>
  ))}
  </View>
