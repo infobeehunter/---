@@ -1,166 +1,44 @@
-import * as React from "react";
-import { ScrollView, Text, View, FlatList } from "react-native";
+import React from "react";
+import { ScrollView, Text, View, Pressable } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { useColors } from "@/hooks/use-colors";
 const BADGES = [
- {
- id: "1",
- name: "Capitano del Levante",
- category: "explorer",
- description: "Completa un tour in barca",
- unlocked: true,
- color: "#1A4B8C",
- },
- {
- id: "2",
- name: "Pedalatore Seriale",
- category: "explorer",
- description: "Completa un tour in bici",
- unlocked: true,
- color: "#2ECC71",
- },
- {
- id: "3",
- name: "Orecchietta Master",
- category: "explorer",
- description: "Completa il corso di orecchiette",
- unlocked: false,
- color: "#F5C518",
- },
- {
- id: "4",
- name: "Storico Barese",
- category: "explorer",
- description: "Visita 3 monumenti storici",
- unlocked: true,
- color: "#FF6B6B",
- },
- {
- id: "5",
- name: "Esploratore Marino",
- category: "special",
- description: "Completa 5 esperienze di mare",
- unlocked: false,
- color: "#1A4B8C",
- },
- {
- id: "6",
- name: "Foodie Master",
- category: "special",
- description: "Completa 5 esperienze di cibo",
- unlocked: false,
- color: "#F5C518",
- },
- {
- id: "7",
- name: "Bari Master Hunter",
- category: "master",
- description: "Sblocca tutti i badge",
- unlocked: false,
- color: "#FFD700",
- },
-];
-const BADGE_CATEGORIES = [
- { id: "explorer", name: "Explorer" },
- { id: "special", name: "Special" },
- { id: "master", name: "Master" },
+ { id: 1, name: "Explorer", emoji: "🗺️", description: "Visit 5 experiences" },
+ { id: 2, name: "Foodie", emoji: "🍝", description: "Try 3 local restaurants"
+ { id: 3, name: "History Buff", emoji: "📚", description: "Visit all historica
+ { id: 4, name: "Nature Lover", emoji: "🌿", description: "Explore 5 natural p
+ { id: 5, name: "Collector", emoji: "🎖️", description: "Collect 10 badges" },
+ { id: 6, name: "Champion", emoji: "🏆", description: "Reach top of leaderboard
 ];
 export default function BadgesScreen() {
  const { t } = useLanguage();
- const [selectedCategory, setSelectedCategory] = React.useState("explorer");
- const filteredBadges = BADGES.filter(
- (badge) => badge.category === selectedCategory
- );
- const unlockedCount = BADGES.filter((b) => b.unlocked).length;
- const totalCount = BADGES.length;
+ const colors = useColors();
  return (
- <ScreenContainer className="bg-background">
- <ScrollView
- contentContainerStyle={{ flexGrow: 1 }}
- showsVerticalScrollIndicator={false}
- >
- <View className="gap-4 p-4">
- <View>
- <Text className="text-2xl font-bold text-foreground">
- {t("badges.title")}
- </Text>
- <Text className="text-sm text-muted mt-1">
- {t("badges.subtitle")}
- </Text>
- </View>
- <Card>
- <CardContent>
- <View className="gap-2">
- <View className="flex-row justify-between items-center">
- <Text className="text-sm font-semibold text-foreground">
- {t("profile.unlockedBadges")}
- </Text>
- <Text className="text-lg font-bold text-primary">
- {unlockedCount}/{totalCount}
- </Text>
- </View>
- <View className="h-2 bg-surface rounded-full overflow-hidden">
- <View
- className="h-full bg-success"
- style={{
- width: `${(unlockedCount / totalCount) * 100}%`,
- }}
- />
- </View>
- </View>
- </CardContent>
- </Card>
- <View className="flex-row gap-2">
- {BADGE_CATEGORIES.map((cat) => (
- <Badge
- key={cat.id}
- variant={selectedCategory === cat.id ? "success" : "default"}
- size="sm"
- onPress={() => setSelectedCategory(cat.id)}
- >
- {cat.name}
- </Badge>
- ))}
- </View>
- <View className="gap-3">
- {filteredBadges.map((badge) => (
- <Card
+ <ScreenContainer className="p-4">
+ <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+ <View className="gap-4">
+ <Text className="text-3xl font-bold text-foreground">{t("badges")}</Te
+ <View className="flex-row flex-wrap gap-3 justify-between">
+ {BADGES.map((badge) => (
+ <Pressable
  key={badge.id}
- className={!badge.unlocked ? "opacity-50" : ""}
+ style={({ pressed }) => [
+ {
+ opacity: pressed ? 0.7 : 1,
+ width: "48%",
+ },
+ ]}
  >
- <CardContent>
- <View className="flex-row items-start gap-3">
  <View
- className="w-12 h-12 rounded-full items-center justify-cen
-style={{
- backgroundColor: badge.color,
- }}
+ className="bg-surface border border-border rounded-lg p-4 item
+ style={{ borderColor: colors.border }}
  >
- <Text className="text-xl">
- {badge.unlocked ? "✓" : "🔒"}
- </Text>
+ <Text className="text-4xl">{badge.emoji}</Text>
+ <Text className="text-sm font-semibold text-foreground text-ce
+ <Text className="text-xs text-muted text-center">{badge.descri
  </View>
- <View className="flex-1">
- <Text className="text-sm font-semibold text-foreground">
- {badge.name}
- </Text>
-<Text className="text-xs text-muted mt-1">
- {badge.description}
- </Text>
-<View className="mt-2">
- <Badge
- variant={badge.unlocked ? "success" : "default"}
- size="sm"
- >
- {badge.unlocked ? "Sbloccato" : "Bloccato"}
- </Badge>
- </View>
- </View>
- </View>
- </CardContent>
- </Card>
+ </Pressable>
  ))}
  </View>
  </View>
