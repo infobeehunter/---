@@ -1,0 +1,49 @@
+Plain Text
+bee-hunter/
+├── app/
+│ ├── _layout.tsx
+│ └── (tabs )/
+│ ├── _layout.tsx
+│ ├── index.tsx
+│ ├── explore.tsx
+│ ├── partners.tsx
+│ ├── badges.tsx
+│ ├── leaderboard.tsx
+│ └── profile.tsx
+├── components/
+│ ├── screen-container.tsx
+│ └── ui/
+│ ├── card.tsx
+│ ├── badge.tsx
+│ ├── button.tsx
+│ ├── input.tsx
+│ └── icon-symbol.tsx
+├── lib/
+│ ├── i18n/
+│ │ ├── translations.ts
+│ │ └── language-context.tsx
+│ ├── _core/
+│ │ └── nativewind-pressable.ts
+│ ├── theme-provider.tsx
+│ ├── trpc.ts
+│ └── utils.ts
+├── hooks/
+│ ├── use-colors.ts
+│ ├── use-color-scheme.ts
+│ └── use-auth.ts
+├── constants/
+│ └── theme.ts
+├── assets/
+│ └── images/
+│ ├── icon.png
+│ ├── splash-icon.png
+│ ├── favicon.png
+│ └── android-icon-foreground.png
+├── app.config.ts
+├── tailwind.config.js
+├── theme.config.js
+├── package.json
+├── tsconfig.json
+├── global.css
+├── README.md
+└── .gitignore
