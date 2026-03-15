@@ -1,53 +1,43 @@
-import * as React from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Language, translations } from "./translations";
+import { translations } from "./translations";
+type Language = "it" | "en";
 interface LanguageContextType {
  language: Language;
- setLanguage: (lang: Language) => Promise<void>;
- t: (path: string) => string;
+ setLanguage: (lang: Language) => void;
+ t: (key: string) => string;
 }
-const LanguageContext = React.createContext<LanguageContextType | undefined>(
- undefined
-);
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
- const [language, setLanguageState] = React.useState<Language>("it");
- const [isLoading, setIsLoading] = React.useState(true);
- React.useEffect(() => {
+ const [language, setLanguageState] = useState<Language>("it");
+ const [isLoaded, setIsLoaded] = useState(false);
+ useEffect(() => {
+ loadLanguage();
+ }, []);
  const loadLanguage = async () => {
  try {
- const saved = await AsyncStorage.getItem("app_language");
+ const saved = await AsyncStorage.getItem("language");
  if (saved === "it" || saved === "en") {
  setLanguageState(saved);
  }
  } catch (error) {
- console.error("Errore nel caricamento della lingua:", error);
+ console.error("Error loading language:", error);
  } finally {
- setIsLoading(false);
+ setIsLoaded(true);
  }
  };
- loadLanguage();
- }, []);
  const setLanguage = async (lang: Language) => {
- try {
- await AsyncStorage.setItem("app_language", lang);
  setLanguageState(lang);
+ try {
+ await AsyncStorage.setItem("language", lang);
  } catch (error) {
- console.error("Errore nel salvataggio della lingua:", error);
+ console.error("Error saving language:", error);
  }
  };
- const t = (path: string): string => {
- const keys = path.split(".");
- let value: any = translations[language];
- for (const key of keys) {
- if (value && typeof value === "object" && key in value) {
- value = value[key];
- } else {
- return path;
- }
- }
- return typeof value === "string" ? value : path;
+ const t = (key: string): string => {
+ return (translations[language] as Record<string, string>)[key] || key;
  };
- if (isLoading) {
+ if (!isLoaded) {
  return null;
  }
  return (
@@ -57,11 +47,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
  );
 }
 export function useLanguage() {
- const context = React.useContext(LanguageContext);
- if (context === undefined) {
- throw new Error(
- "useLanguage deve essere usato dentro a LanguageProvider"
- );
+ const context = useContext(LanguageContext);
+ if (!context) {
+ throw new Error("useLanguage must be used within LanguageProvider");
  }
  return context;
 }
