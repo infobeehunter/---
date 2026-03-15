@@ -1,46 +1,18 @@
-import { themeColors } from "@/theme.config";
-export type ColorScheme = "light" | "dark";
-export type ThemeColorPalette = {
- primary: string;
- secondary: string;
- background: string;
- surface: string;
- foreground: string;
- muted: string;
- border: string;
- success: string;
- warning: string;
- error: string;
- partner: string;
- tint: string;
-};
-export const Colors: Record<ColorScheme, ThemeColorPalette> = {
+export const Colors = {
  light: {
- primary: themeColors.primary.light,
- secondary: themeColors.secondary.light,
- background: themeColors.background.light,
- surface: themeColors.surface.light,
- foreground: themeColors.foreground.light,
- muted: themeColors.muted.light,
- border: themeColors.border.light,
- success: themeColors.success.light,
- warning: themeColors.warning.light,
- error: themeColors.error.light,
- partner: themeColors.partner.light,
- tint: themeColors.primary.light,
+ text: "#1C1C1E",
+ background: "#FFFFFF",
+ tint: "#F5C518",
+ tabIconDefault: "#687076",
+ tabIconSelected: "#F5C518",
  },
  dark: {
- primary: themeColors.primary.dark,
- secondary: themeColors.secondary.dark,
- background: themeColors.background.dark,
- surface: themeColors.surface.dark,
- foreground: themeColors.foreground.dark,
- muted: themeColors.muted.dark,
- border: themeColors.border.dark,
- success: themeColors.success.dark,
- warning: themeColors.warning.dark,
- error: themeColors.error.dark,
- partner: themeColors.partner.dark,
- tint: themeColors.primary.dark,
+ text: "#ECEDEE",
+ background: "#1C1C1E",
+ tint: "#F5C518",
+ tabIconDefault: "#9BA1A6",
+ tabIconSelected: "#F5C518",
  },
 };
+export type ColorScheme = keyof typeof Colors;
+export type ThemeColorPalette = (typeof Colors)[ColorScheme];
